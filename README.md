@@ -1,182 +1,119 @@
 # HireFlow — Recruitment Management System
 
-HireFlow is a backend-focused Recruitment Management System built with Java and Spring Boot. It provides a secure REST API for managing users, companies, job vacancies, and job applications.
+HireFlow is a **backend-focused Recruitment Management System** built with **Java 21 and Spring Boot**. It provides a secure REST API for managing users, companies, job vacancies, and job applications.
 
-The application implements JWT-based authentication, role-based authorization, email verification, refresh-token management, database migrations with Flyway, validation, centralized exception handling, and Docker-based deployment.
+The application implements **JWT authentication, role-based authorization, email verification, refresh-token management, PostgreSQL persistence, Flyway migrations, request validation, centralized exception handling, unit testing, and Docker-based deployment**.
 
-The project is deployed using Docker on Render with a managed PostgreSQL database.
+The application is deployed on **Render** with a managed PostgreSQL database.
 
 ---
 
-## 🚀 Live Deployment
+## 🌐 Live Deployment
 
-**Backend:**  
+**Live Backend:**  
 https://hireflow-3rcl.onrender.com
 
 **GitHub Repository:**  
 https://github.com/kushal564/HireFlow
 
-> Note: The application is deployed on Render's free infrastructure, so the service may take some time to respond after a period of inactivity.
+> **Note:** The application is deployed on Render's free infrastructure, so the service may take some time to respond after a period of inactivity.
 
 ---
 
-# 📌 Project Overview
+## ✨ Features
 
-HireFlow provides a complete backend workflow for a recruitment platform.
+### 🔐 Authentication & Security
 
-The system supports two primary roles:
+- User registration and login
+- Email verification
+- JWT access tokens
+- JWT refresh tokens
+- Persistent refresh-token management
+- Refresh-token cleanup
+- HTTP-only refresh-token cookie
+- Spring Security filter chain
+- Custom JWT authentication filter
+- Stateless authentication
+- Role-based authorization
+- BCrypt password encoding
+- Centralized security exception handling
 
+### 👥 Roles & Authorization
+
+The application supports three roles:
+
+- **ADMIN**
 - **RECRUITER**
 - **CANDIDATE**
 
-### Recruiter capabilities
+#### ADMIN
 
-Recruiters can:
+- Update user roles
 
-- Create companies
-- Update their own companies
-- Delete their own companies
-- Create job vacancies
-- Update their vacancies
-- Manage recruitment applications
-- View applications associated with their vacancies
-- Update application statuses
+#### RECRUITER
 
-### Candidate capabilities
+- Create, update, and delete owned companies
+- Create, update, and delete owned vacancies
+- View recruitment-related applications
+- Update application status
 
-Candidates can:
+#### CANDIDATE
 
-- Register an account
-- Verify their email address
-- Login securely
+- Register and verify account
 - Browse companies and vacancies
 - Apply for vacancies
-- View their own applications
+- View own applications
 - Track application status
 
----
+Authorization is enforced using **Spring Security**, with additional **service-layer ownership checks** for recruiter-managed resources.
 
-# ✨ Features
-
-## Authentication & Security
-
-- User registration
-- Email verification
-- Login authentication
-- JWT access tokens
-- JWT refresh tokens
-- Refresh-token persistence
-- Refresh-token cleanup
-- HTTP-only refresh-token cookie
-- Role-based authorization
-- Spring Security filter chain
-- Custom JWT authentication filter
-- Protected REST endpoints
-- Centralized security exception handling
-
-## User Management
-
-- User registration
-- User login
-- User role management
-- Candidate and recruiter roles
-- Authenticated user retrieval
-- Role-based access control
-
-## Company Management
+### 🏢 Company Management
 
 - Create company
-- Get all companies
-- Get company by ID
+- Retrieve companies
+- Retrieve company by ID
 - Update company
 - Delete company
 - Recruiter ownership validation
 
-## Vacancy Management
+### 💼 Vacancy Management
 
 - Create vacancy
-- Update vacancy
 - Retrieve vacancies
-- Filter vacancies
-- Recruiter-specific vacancy management
-- Company-vacancy relationship
+- Retrieve vacancy by ID
+- Update vacancy
+- Delete vacancy
+- Filtering
+- Pagination
+- Sorting
+- Salary-range validation
+- Recruiter ownership validation
 
-## Application Management
+### 📝 Application Management
 
 - Candidate applies for vacancy
 - Candidate views own applications
-- Recruiter views applications
+- Recruiter views applications associated with their vacancies
 - Recruiter updates application status
-- Application ownership and authorization checks
 
-## Database
+### ✉️ Email
 
-- PostgreSQL
-- Spring Data JPA
-- Hibernate
-- Flyway database migrations
-- Versioned schema management
-
-## Email
-
-- Spring Mail
+- Email verification
 - SMTP integration
 - Brevo SMTP relay
-- Email verification
 - Configurable verification-token expiration
 
-## API Documentation
-
-- OpenAPI
-- Swagger UI
-
-## Deployment
-
-- Docker
-- Docker Compose for local development
-- Render Web Service
-- Render PostgreSQL
-- Production environment variables
-- HTTPS deployment
-
 ---
 
-# 🛠️ Tech Stack
+## 🏗️ Architecture
 
-| Technology | Purpose |
-|---|---|
-| Java 21 | Programming language |
-| Spring Boot 4.1 | Backend framework |
-| Spring Web | REST API development |
-| Spring Security | Authentication & authorization |
-| JWT | Access & refresh token authentication |
-| Spring Data JPA | Data access layer |
-| Hibernate | ORM |
-| PostgreSQL | Production database |
-| Flyway | Database migrations |
-| Spring Mail | Email functionality |
-| Brevo SMTP | Email delivery |
-| Maven | Build & dependency management |
-| Lombok | Boilerplate reduction |
-| Bean Validation | Request validation |
-| OpenAPI / Swagger | API documentation |
-| Docker | Containerization |
-| Docker Compose | Local multi-container setup |
-| Render | Cloud deployment |
-| Git & GitHub | Version control |
-
----
-# 🏗️ System Architecture
-
-The following diagram provides a complete overview of HireFlow's backend architecture, including the application layers, authentication and authorization flow, database design, core modules, technology stack, and production deployment architecture.
+The application follows a **layered backend architecture with domain-oriented modules**.
 
 <p align="center">
-  <img src="docs/HireFlow-Complete%20picture.png" alt="HireFlow Complete Architecture" width="100%">
+  <img src="docs/HireFlow-Complete%20picture.png" alt="HireFlow Architecture" width="100%">
 </p>
 
-### Architecture Overview
-
-HireFlow follows a layered architecture with clear separation of responsibilities:
+### Request Flow
 
 ```text
 Client
@@ -185,336 +122,241 @@ Client
 Spring Security Filter Chain
    │
    ▼
-REST Controllers
-   │
-   ▼
-Service Layer
-   │
-   ▼
-Repository Layer
-   │
-   ▼
-PostgreSQL
-
-# 🏗️ Architecture
-
-HireFlow follows a layered backend architecture.
-
-```text
-Client
-  │
-  ▼
 REST Controller
-  │
-  ▼
+   │
+   ▼
 Service Layer
-  │
-  ▼
+   │
+   ▼
 Repository Layer
-  │
-  ▼
-PostgreSQL Database
+   │
+   ▼
+PostgreSQL
+```
 
-Security is applied before the request reaches the controller:
+### Protected Request Flow
 
+```text
 Client
-  │
-  │ Authorization: Bearer <JWT>
-  ▼
-Spring Security Filter Chain
-  │
-  ▼
+   │
+   │ Authorization: Bearer <JWT>
+   ▼
 JwtAuthenticationFilter
-  │
-  ├── Extract JWT
-  ├── Validate JWT
-  ├── Extract username
-  ├── Load UserDetails
-  └── Set Authentication
-  │
-  ▼
+   │
+   ├── Extract JWT
+   ├── Validate signature & expiration
+   ├── Extract user information
+   ├── Load authenticated user
+   └── Set SecurityContext
+   │
+   ▼
 Authorization
-  │
-  ▼
+   │
+   ▼
 Controller
-  │
-  ▼
+   │
+   ▼
 Service
-  │
-  ▼
+   │
+   ▼
 Repository
+   │
+   ▼
+PostgreSQL
+```
+
+### Project Structure
+
+```text
+com.kushal.hireflow
+│
+├── auth
+├── company
+├── vacancy
+├── application
+├── user
+├── enums
+└── common
+```
+
+The major domains separate **controllers, DTOs, entities, repositories, and services** according to responsibility.
+
+---
+
+## 🔑 Authentication Flow
+
+HireFlow uses separate **access and refresh JWTs**.
+
+### Login
+
+```text
+Client
+  │
+  ▼
+/api/auth/login
+  │
+  ▼
+AuthenticationManager
+  │
+  ▼
+DaoAuthenticationProvider
+  │
+  ▼
+CustomUserDetailsService
+  │
+  ▼
+UserRepository
   │
   ▼
 PostgreSQL
+```
 
-  🔐 Authentication Flow
+After successful authentication, `JwtService` generates:
 
-HireFlow uses JWT-based authentication.
+- **Access Token**
+- **Refresh Token**
 
-Registration
-Client
-   │
-   ▼
-POST /api/auth/register
-   │
-   ▼
-AuthController
-   │
-   ▼
-AuthService
-   │
-   ├── Validate request
-   ├── Create user
-   ├── Assign role
-   ├── Save user
-   └── Generate email verification token
-   │
-   ▼
-EmailVerificationService
-   │
-   ▼
-SMTP / Brevo
-   │
-   ▼
-Verification Email
+### Access Token
 
-The user must verify the email before completing the normal authentication flow.
+The access token is sent using:
 
-  🔑 Login Flow
-
-Client
-   │
-   ▼
-POST /api/auth/login
-   │
-   ▼
-Spring Security
-   │
-   ▼
-AuthenticationManager
-   │
-   ▼
-DaoAuthenticationProvider
-   │
-   ▼
-CustomUserDetailsService
-   │
-   ▼
-UserRepository
-   │
-   ▼
-PostgreSQL
-
-After successful authentication:
-
-Authenticated User
-       │
-       ▼
-JwtService
-       │
-       ├── Access Token
-       │
-       └── Refresh Token
-
-The access token is used to access protected APIs.
-
-🎟️ JWT Access Token
-
-The access token is sent in the HTTP Authorization header:
-
+```text
 Authorization: Bearer <access-token>
+```
 
-The JwtAuthenticationFilter:
+The `JwtAuthenticationFilter` validates the token and establishes authentication in the Spring Security context.
 
-Reads the Authorization header.
-Checks for the Bearer prefix.
-Extracts the JWT.
-Validates the token.
-Extracts the username/subject.
-Loads the user.
-Creates an authenticated SecurityContext.
-Allows the request to continue through the filter chain.
+### Refresh Token
 
-🔄 Refresh Token
+Refresh tokens are persisted in PostgreSQL and include:
 
-Refresh tokens are persisted in the database.
+- Unique token identifier
+- Expiration handling
+- Last-used tracking
+- Cleanup of expired tokens
+- HTTP-only cookie handling
+- Secure production cookie configuration
 
-They are used to obtain a new access token when the access token expires.
+---
 
-The project also includes refresh-token cleanup functionality to remove or manage expired/old refresh tokens.
+## 🛡️ Role-Based Authorization
 
-The refresh token is handled through a secure HTTP cookie configuration in production.
+Roles are stored in the database:
 
-👥 Role-Based Authorization
-
-HireFlow uses roles stored in the database.
-
-Current roles:
-
+```text
+ADMIN
 RECRUITER
 CANDIDATE
+```
 
-Authorization is enforced using Spring Security and application-level ownership checks.
+The application combines **endpoint-level authorization** with **service-layer ownership validation**.
 
 For example:
 
-A recruiter can update only their own company.
-
+```text
 Recruiter A
    │
    ├── Company A → Allowed
    │
    └── Company B → Forbidden
+```
 
-This prevents users from modifying resources that belong to another recruiter.
+This prevents recruiters from modifying resources belonging to other recruiters.
 
-🏢 Company Management
+The ADMIN role currently has access to user role management:
 
-Companies are associated with recruiters.
+```text
+PATCH /api/users/{id}/role
+```
 
-Main endpoints
-POST   /api/companies
-GET    /api/companies
-GET    /api/companies/{id}
-PUT    /api/companies/{id}
-DELETE /api/companies/{id}
-Company creation
+---
 
-Only authenticated recruiters can create companies.
+## 🔄 Recruitment Workflow
 
-The created company is associated with the currently authenticated recruiter.
-
-Company update/delete
-
-A recruiter can modify or delete only their own company.
-
-💼 Vacancy Management
-
-Vacancies are associated with companies and managed through the recruiter workflow.
-
-Example vacancy:
-
-{
-  "title": "Java Backend Developer",
-  "description": "We are looking for a Java backend developer with experience in Spring Boot, REST APIs, and PostgreSQL.",
-  "location": "Noida",
-  "salaryFrom": 600000,
-  "salaryTo": 1000000,
-  "companyId": 1
-}
-
-Vacancy functionality includes:
-
-Creating vacancies
-Updating vacancies
-Retrieving vacancies
-Filtering vacancies
-Recruiter ownership validation
-
-📄 Application Management
-
-Candidates can apply to available vacancies.
-
-Example:
-
-POST /api/applications
-
-Request:
-
-{
-  "vacancyId": 1
-}
-
-The application associates:
-
+```text
+Recruiter
+    │
+    ▼
+Create Company
+    │
+    ▼
+Create Vacancy
+    │
+    ▼
 Candidate
     │
     ▼
-Application
+Apply for Vacancy
     │
     ▼
-Vacancy
+Recruiter
     │
     ▼
-Company
+View Application
+    │
+    ▼
+Update Application Status
+    │
+    ▼
+Candidate
+    │
+    ▼
+View Updated Status
+```
 
-Candidates can view their applications, while recruiters can view applications related to their recruitment process.
+---
 
-📊 Application Status
+## 🗄️ Database
 
-Recruiters can update application status.
+HireFlow uses **PostgreSQL**, **Spring Data JPA**, **Hibernate**, and **Flyway**.
 
-Example:
+### Main Entities
 
-PATCH /api/applications/{id}/status
+- `User`
+- `Role`
+- `Company`
+- `Vacancy`
+- `Application`
+- `RefreshToken`
+- `EmailVerificationToken`
 
-Example request:
+### Core Relationships
 
-{
-  "status": "ACCEPTED"
-}
-
-The application status represents the current stage of the recruitment process.
-
-🗄️ Database Design
-
-HireFlow uses PostgreSQL with JPA/Hibernate.
-
-Main entities include:
-
-User
-Role
-Company
-Vacancy
-Application
-RefreshToken
-EmailVerificationToken
-
-Relationships include:
-
+```text
 Role
  │
  └── User
+      │
+      └── Company
+           │
+           └── Vacancy
+                │
+                └── Application
+                     │
+                     └── User
+```
 
-User
- │
- └── Company
-       │
-       └── Vacancy
-              │
-              └── Application
-                    │
-                    └── User
+### Flyway Migrations
 
-Authentication-related entities:
+The project contains **11 versioned Flyway migrations** covering:
 
-User
- │
- ├── RefreshToken
- │
- └── EmailVerificationToken
- 
- 
-🧬 Database Migrations
-
-Flyway is used to version and manage database schema changes.
-
-Current migrations include:
-
-V1  - Create roles table
-V2  - Create users table
-V3  - Insert default roles
-V4  - Create companies table
-V5  - Create vacancies table
-V6  - Create applications table
-V7  - Add email_verified to users
-V8  - Create email verification tokens table
-V9  - Seed demo data
-V10 - Create refresh tokens table
-V11 - Add last_used_at to refresh tokens
+| Version | Purpose |
+|---|---|
+| V1 | Roles |
+| V2 | Users |
+| V3 | Default roles |
+| V4 | Companies |
+| V5 | Vacancies |
+| V6 | Applications |
+| V7 | Email verification state |
+| V8 | Email verification tokens |
+| V9 | Demo data |
+| V10 | Refresh tokens |
+| V11 | Refresh-token last-used tracking |
 
 Production uses:
 
+```yaml
 spring:
   jpa:
     hibernate:
@@ -522,166 +364,232 @@ spring:
 
   flyway:
     enabled: true
+```
 
-This means Hibernate validates the existing schema instead of creating or modifying database tables automatically.
+Hibernate **validates the production schema**, while **Flyway manages schema changes through versioned migrations**.
 
-Flyway is responsible for applying the database migrations.
+---
 
-🧯 Exception Handling
+## 🧯 Exception Handling & Validation
 
-The project uses centralized exception handling.
+The application uses centralized exception handling through a global exception handler.
 
 Custom exceptions include:
 
-BadRequestException
-ForbiddenException
-ResourceNotFoundException
+- `BadRequestException`
+- `ForbiddenException`
+- `ResourceNotFoundException`
 
-A global exception handler provides consistent API error responses.
+Request DTOs use Jakarta Bean Validation annotations such as:
 
-Example structure:
+- `@NotBlank`
+- `@NotNull`
+- `@Positive`
+- `@Valid`
 
-{
-  "status": 403,
-  "error": "Forbidden",
-  "message": "You can update only your own company",
-  "path": "/api/companies/1"
-}
+Invalid requests are handled consistently through the application's exception-handling layer.
 
-This keeps error handling consistent across controllers.
+---
 
-✅ Validation
+## 🧪 Testing
 
-Request DTOs use Jakarta Bean Validation.
+The project includes automated **unit tests using JUnit 5 and Mockito**.
 
-Examples include:
+The current test suite contains **23 passing unit tests** covering JWT functionality and important service-layer business rules.
 
-@NotBlank
-@NotNull
-@Valid
+| Test Class | Tests | Focus |
+|---|---:|---|
+| `JwtServiceTest` | 8 | JWT generation, extraction, validation, and invalid-token handling |
+| `CompanyServiceTest` | 7 | Company authorization, ownership, and service behavior |
+| `VacancyServiceTest` | 8 | Vacancy authorization, ownership, and filter validation |
+| **Total** | **23** | |
 
-Validation is performed before the request reaches the service layer.
+### Testing Focus
 
-Invalid requests are handled through the centralized exception handler.
+The tests primarily cover:
 
-📦 Project Structure
-src/
-├── main/
-│   ├── java/
-│   │   └── com/
-│   │       └── kushal/
-│   │           └── hireflow/
-│   │               │
-│   │               ├── application/
-│   │               │   ├── controller/
-│   │               │   ├── dto/
-│   │               │   ├── entity/
-│   │               │   ├── repository/
-│   │               │   └── service/
-│   │               │
-│   │               ├── auth/
-│   │               │   ├── controller/
-│   │               │   ├── dto/
-│   │               │   ├── entity/
-│   │               │   ├── repository/
-│   │               │   ├── security/
-│   │               │   └── service/
-│   │               │
-│   │               ├── company/
-│   │               │   ├── controller/
-│   │               │   ├── dto/
-│   │               │   ├── entity/
-│   │               │   ├── repository/
-│   │               │   └── service/
-│   │               │
-│   │               ├── common/
-│   │               │   ├── config/
-│   │               │   ├── controller/
-│   │               │   ├── exception/
-│   │               │   └── response/
-│   │               │
-│   │               ├── enums/
-│   │               │
-│   │               ├── user/
-│   │               │   ├── controller/
-│   │               │   ├── dto/
-│   │               │   ├── entity/
-│   │               │   ├── repository/
-│   │               │   └── service/
-│   │               │
-│   │               └── vacancy/
-│   │                   ├── controller/
-│   │                   ├── dto/
-│   │                   ├── entity/
-│   │                   ├── repository/
-│   │                   ├── service/
-│   │                   └── specification/
-│   │
-│   └── resources/
-│       ├── db/
-│       │   └── migration/
-│       │       ├── V1__create_roles_table.sql
-│       │       ├── V2__create_users_table.sql
-│       │       ├── V3__insert_default_roles.sql
-│       │       ├── V4__create_companies_table.sql
-│       │       ├── V5__create_vacancies_table.sql
-│       │       ├── V6__create_applications_table.sql
-│       │       ├── V7__add_email_verified_to_users.sql
-│       │       ├── V8__create_email_verification_tokens_table.sql
-│       │       ├── V9__seed_demo_data.sql
-│       │       ├── V10__create_refresh_tokens_table.sql
-│       │       └── V11__add_last_used_at_to_refresh_tokens.sql
-│       │
-│       └── application.yml
-│
-├── Dockerfile
-├── docker-compose.yml
-├── pom.xml
-└── README.md
-🐳 Docker
+- JWT authentication logic
+- Token validation
+- Authorization boundaries
+- Recruiter ownership rules
+- Unauthorized resource modification
+- Resource-not-found handling
+- Business-rule validation
+- Repository interaction behavior
 
-HireFlow can be run using Docker and Docker Compose.
+The current suite is **unit-level testing**. Controller-level and broader integration testing are not presented as completed functionality.
 
-The project contains:
+### Run Tests
 
-Dockerfile
-docker-compose.yml
-.dockerignore
+```bash
+mvn test
+```
 
-The Docker setup allows the Spring Boot application and PostgreSQL database to run as separate containers.
+Run a complete Maven build:
 
-Example architecture:
+```bash
+mvn clean package
+```
 
+---
+
+## 📖 API Documentation
+
+Swagger/OpenAPI is configured for interactive API documentation and API testing.
+
+### Local Swagger UI
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+Swagger provides the available REST endpoints together with their request and response schemas.
+
+---
+
+## 🔗 Main API Endpoints
+
+### Authentication
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh
+POST /api/auth/logout
+POST /api/auth/resend-verification
+GET  /api/auth/verify-email
+```
+
+### User / Admin
+
+```text
+PATCH /api/users/{id}/role
+```
+
+Restricted to `ADMIN`.
+
+### Companies
+
+```text
+POST   /api/companies
+GET    /api/companies
+GET    /api/companies/{id}
+PUT    /api/companies/{id}
+DELETE /api/companies/{id}
+```
+
+### Vacancies
+
+```text
+POST   /api/vacancies
+GET    /api/vacancies
+GET    /api/vacancies/{id}
+PUT    /api/vacancies/{id}
+DELETE /api/vacancies/{id}
+```
+
+### Applications
+
+```text
+POST  /api/applications
+GET   /api/applications/my
+GET   /api/applications/recruiter
+PATCH /api/applications/{id}/status
+```
+
+See Swagger/OpenAPI for complete request and response specifications.
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **Java 21** | Programming language |
+| **Spring Boot 4.1** | Backend framework |
+| **Spring Web** | REST APIs |
+| **Spring Security** | Authentication & authorization |
+| **JJWT** | JWT implementation |
+| **Spring Data JPA** | Data access |
+| **Hibernate** | ORM |
+| **PostgreSQL** | Relational database |
+| **Flyway** | Database migrations |
+| **Spring Mail** | Email functionality |
+| **Brevo SMTP** | Email delivery |
+| **Jakarta Bean Validation** | Request validation |
+| **JUnit 5** | Automated testing |
+| **Mockito** | Unit-test mocking |
+| **OpenAPI / Swagger** | API documentation |
+| **Maven** | Build & dependency management |
+| **Lombok** | Boilerplate reduction |
+| **Docker** | Containerization |
+| **Docker Compose** | Local container orchestration |
+| **Render** | Cloud deployment |
+| **Git & GitHub** | Version control |
+
+---
+
+## 🐳 Docker
+
+The project includes:
+
+- `Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+
+Docker Compose can run the Spring Boot application together with PostgreSQL.
+
+```text
 Docker Compose
       │
-      ├── hireflow-app
-      │       │
-      │       └── Spring Boot
+      ├── Spring Boot Application
       │
       └── PostgreSQL
-▶️ Running Locally
-Prerequisites
+```
 
-Install:
+### Run with Docker Compose
 
-Java 21
-Maven
-Docker Desktop
-Git
-Clone the repository
+```bash
+docker compose up --build
+```
+
+Run in detached mode:
+
+```bash
+docker compose up -d --build
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+---
+
+## ▶️ Local Setup
+
+### Prerequisites
+
+- Java 21
+- Maven
+- Docker Desktop
+- Git
+
+### Clone
+
+```bash
 git clone https://github.com/kushal564/HireFlow.git
-
-Navigate into the project:
-
 cd HireFlow
-🔐 Environment Variables
+```
 
-Sensitive configuration is not committed to GitHub.
+### Environment Variables
 
-Create a local .env file containing the required environment variables.
+Sensitive configuration is kept outside source control.
 
 Example:
 
+```env
 DB_USERNAME=hireflow
 DB_PASSWORD=your_database_password
 
@@ -705,83 +613,17 @@ EMAIL_VERIFICATION_EXPIRATION_HOURS=24
 
 JPA_SHOW_SQL=false
 JPA_FORMAT_SQL=false
+```
 
-Never commit .env or production secrets to GitHub.
+> **Never commit `.env` files or production secrets to source control.**
 
-🐳 Run with Docker Compose
+---
 
-Build and start the containers:
+## ☁️ Production Deployment
 
-docker compose up --build
+The production setup uses **GitHub, Render, Docker, and managed PostgreSQL**.
 
-Run in detached mode:
-
-docker compose up -d --build
-
-Check running containers:
-
-docker compose ps
-
-View application logs:
-
-docker logs hireflow-app
-
-Stop the containers:
-
-docker compose down
-🧪 Testing
-
-The project contains Spring Boot tests under:
-
-src/test/
-
-Tests can be executed with Maven:
-
-mvn test
-
-For a package build:
-
-mvn clean package
-📚 API Documentation
-
-Swagger/OpenAPI is configured for API documentation.
-
-When running locally, Swagger UI can be accessed at:
-
-http://localhost:8080/swagger-ui/index.html
-
-The deployed application can also be accessed through its Render URL.
-
-🔗 Main API Endpoints
-Authentication
-POST /api/auth/register
-POST /api/auth/login
-POST /api/auth/refresh
-POST /api/auth/resend-verification
-GET  /api/auth/verify-email
-Companies
-POST   /api/companies
-GET    /api/companies
-GET    /api/companies/{id}
-PUT    /api/companies/{id}
-DELETE /api/companies/{id}
-Vacancies
-POST   /api/vacancies
-GET    /api/vacancies
-GET    /api/vacancies/{id}
-PUT    /api/vacancies/{id}
-Applications
-POST  /api/applications
-GET   /api/applications/my
-GET   /api/applications/recruiter
-PATCH /api/applications/{id}/status
-
-Refer to the Swagger/OpenAPI documentation for the complete request and response specifications.
-
-☁️ Production Deployment
-
-The application is deployed using:
-
+```text
 GitHub
    │
    ▼
@@ -795,124 +637,103 @@ Spring Boot Application
    │
    ▼
 Render PostgreSQL
+```
 
-The production database is managed separately through Render PostgreSQL.
+Production configuration is supplied through environment variables for:
 
-The application uses environment variables for:
+- Database credentials
+- JWT secrets
+- SMTP credentials
+- Email configuration
+- Cookie configuration
+- Production URLs
 
-Database credentials
-JWT secrets
-SMTP credentials
-Email configuration
-Cookie configuration
-Production URLs
-🔄 Production Database Initialization
+---
 
-The production database starts without the application's schema.
+## 🔒 Production Security
 
-When the application starts:
-
-Spring Boot
-     │
-     ▼
-Flyway
-     │
-     ├── V1
-     ├── V2
-     ├── V3
-     ├── ...
-     └── V11
-     │
-     ▼
-PostgreSQL schema ready
-     │
-     ▼
-Hibernate validates schema
-     │
-     ▼
-Application starts
-
-This allows the production database schema to be reproducibly created from version-controlled migration scripts.
-
-🔒 Production Security Considerations
-
-Production configuration uses environment variables instead of hard-coded secrets.
+Production secrets are provided through environment variables rather than being hard-coded.
 
 Sensitive values include:
 
-DB_PASSWORD
-JWT_ACCESS_SECRET
-JWT_REFRESH_SECRET
-MAIL_PASSWORD
-
-These values should never be committed to source control.
+- `DB_PASSWORD`
+- `JWT_ACCESS_SECRET`
+- `JWT_REFRESH_SECRET`
+- `MAIL_PASSWORD`
 
 The production refresh cookie uses:
 
+```text
 JWT_REFRESH_COOKIE_SECURE=true
+```
 
-because the deployed application is served through HTTPS.
+because the deployed application is served over HTTPS.
 
-📈 Future Improvements
+---
 
-Possible future enhancements include:
+## 📈 Future Improvements
 
-Advanced recruiter dashboard
-Candidate profile management
-Resume upload and storage
-Job search improvements
-Pagination across more endpoints
-Advanced vacancy filtering
-Application notifications
-Automated email notifications
-Password reset functionality
-Account management
-Audit logging
-Application analytics
-CI/CD pipeline
-Automated deployment
-Cloud object storage for resumes
-Improved automated test coverage
-Monitoring and observability
-🎯 Learning Objectives
+Potential future enhancements include:
 
-This project was built to demonstrate practical backend development concepts including:
+- Advanced recruiter dashboard
+- Candidate profile management
+- Resume upload and storage
+- Advanced job search
+- Application notifications
+- Password reset
+- Account management
+- Audit logging
+- Application analytics
+- GitHub Actions CI pipeline
+- Automated deployment workflow
+- Cloud object storage for resumes
+- Controller-level and integration test coverage
+- Monitoring and observability
 
-Java
-Spring Boot
-REST API development
-Dependency Injection
-Layered architecture
-Spring Security
-JWT authentication
-Role-based authorization
-JPA/Hibernate
-PostgreSQL
-Flyway migrations
-DTO-based API design
-Validation
-Exception handling
-Email verification
-Refresh-token management
-Docker
-Docker Compose
-Cloud deployment
-Environment-based configuration
+These are potential extensions and are **not presented as currently implemented features**.
 
+---
 
-👨‍💻 Author
+## 🎯 Project Highlights
 
-Kushal Yadav
+HireFlow demonstrates practical backend development using:
 
-GitHub:
-https://github.com/kushal564
+- **Java 21 + Spring Boot**
+- **REST API architecture**
+- **Spring Security + JWT**
+- **Access & refresh-token authentication**
+- **HTTP-only refresh-token cookies**
+- **Role-based authorization**
+- **Resource ownership validation**
+- **PostgreSQL + JPA/Hibernate**
+- **Flyway database migrations**
+- **Email verification**
+- **Bean Validation**
+- **Global exception handling**
+- **JUnit 5 + Mockito**
+- **23 passing unit tests**
+- **Docker + Docker Compose**
+- **Render cloud deployment**
+- **OpenAPI / Swagger**
 
-⭐ Project Status
+---
 
-Production deployed and functional.
+## 👨‍💻 Author
 
-The deployed application has been tested across the major recruitment workflow:
+**Kushal Yadav**
 
+GitHub:  
+https://github.com/kushal564/HireFlow
+
+---
+
+## ⭐ Project Status
+
+**Production deployed and functional.**
+
+The major recruitment workflow has been tested through the deployed API:
+
+```text
 Recruiter Login
       ↓
 JWT Authentication
@@ -923,23 +744,29 @@ Vacancy Creation
       ↓
 Candidate Login
       ↓
-Candidate Applies
+Candidate Application
       ↓
 Recruiter Views Application
       ↓
 Recruiter Updates Status
       ↓
 Candidate Views Updated Status
+```
 
-📄 License
+The project currently includes:
+
+- Production deployment on Render
+- Managed PostgreSQL database
+- JWT access and refresh-token authentication
+- ADMIN, RECRUITER, and CANDIDATE roles
+- Recruiter ownership validation
+- 11 Flyway migrations
+- Docker-based deployment
+- Swagger/OpenAPI documentation
+- 23 automated unit tests using JUnit 5 and Mockito
+
+---
+
+## 📄 License
 
 This project is intended primarily as a portfolio and learning project.
-
-
-### One thing before you paste it
-
-I intentionally **didn't put any real passwords, JWT secrets, Brevo credentials, or database credentials** into the README.
-
-Also, I would **not change your code just for the README**. This version describes the project you have actually deployed.
-
-Once you've pasted it into `README.md`, **don't push immediately**. Show me the README preview first (or tell me you've pasted it), and we can make sure the GitHub presentation looks professional before the final commit.
