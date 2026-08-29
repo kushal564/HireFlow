@@ -1,0 +1,76 @@
+services:
+
+  postgres:
+    image: postgres:18
+    container_name: hireflow-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: hireflow
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - hireflow-postgres-data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d hireflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  hireflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: hireflow-app
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+
+    environment:
+
+      # PostgreSQL
+      DB_URL: jdbc:postgresql://postgres:5432/hireflow
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # JWT
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+
+      # Mail / Brevo
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH}
+      MAIL_SMTP_STARTTLS: ${MAIL_SMTP_STARTTLS}
+      MAIL_FROM: ${MAIL_FROM}
+
+      # JWT refresh cookie
+      JWT_REFRESH_COOKIE_SECURE: ${JWT_REFRESH_COOKIE_SECURE}
+      JWT_REFRESH_COOKIE_SAME_SITE: ${JWT_REFRESH_COOKIE_SAME_SITE}
+      JWT_REFRESH_COOKIE_PATH: ${JWT_REFRESH_COOKIE_PATH}
+
+      # Email verification
+      EMAIL_VERIFICATION_BASE_URL: ${EMAIL_VERIFICATION_BASE_URL}
+      EMAIL_VERIFICATION_EXPIRATION_HOURS: ${EMAIL_VERIFICATION_EXPIRATION_HOURS}
+
+      # Optional JPA settings
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL}
+      JPA_FORMAT_SQL: ${JPA_FORMAT_SQL}
+
+
+volumes:
+  hireflow-postgres-data:
